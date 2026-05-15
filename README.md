@@ -1,6 +1,6 @@
 # Three-Way Match Engine
 
-A backend service that allows users to upload Purchase Order (PO), Goods Receipt Note (GRN), and Invoice documents, extract structured data using **Gemini API**, store the extracted data in **MongoDB**, and perform a **three-way match** with full out-of-order document support.
+A backend service that allows users to upload Purchase Order (PO), Goods Receipt Note (GRN), and Invoice documents, extract structured data using **Mistral AI**, store the extracted data in **MongoDB**, and perform a **three-way match** with full out-of-order document support.
 
 ---
 
@@ -24,7 +24,7 @@ A backend service that allows users to upload Purchase Order (PO), Goods Receipt
 ### Prerequisites
 - Node.js 18+
 - MongoDB (local or Atlas)
-- Gemini API key ([get one free](https://aistudio.google.com/app/apikey))
+- Mistral API key ([get one free](https://console.mistral.ai))
 
 ### Setup
 
@@ -36,7 +36,7 @@ npm install
 
 # 2. Configure environment
 cp .env.example .env
-# Edit .env: set MONGODB_URI and GEMINI_API_KEY
+# Edit .env: set MONGODB_URI and MISTRAL_API_KEY
 
 # 3. Start the server
 npm run dev      # development (nodemon)
@@ -64,13 +64,14 @@ curl http://localhost:3000/match/PO-2024-0042
 
 ## Approach
 
-The system follows a **parse-store-match** pipeline:
+The system follows a **two-step OCR → Extract → Store → Match** pipeline:
 
 1. **Upload**: File received via multipart form upload (Multer)
-2. **Parse**: Gemini 1.5 Flash extracts structured JSON from the document
-3. **Store**: Parsed data persisted in MongoDB (separate collections per doc type)
-4. **Match**: Matching triggered automatically; result upserted in `matchresults` collection
-5. **Query**: Match results always reflect the latest document state
+2. **OCR**: Mistral OCR (`mistral-ocr-latest`) converts PDF/image into clean markdown text
+3. **Extract**: Mistral Small (`mistral-small-latest`) extracts structured JSON from the OCR output using a document-type-specific prompt
+4. **Store**: Parsed data persisted in MongoDB (separate collections per doc type)
+5. **Match**: Matching triggered automatically; result upserted in `matchresults` collection
+6. **Query**: Match results always reflect the latest document state
 
 ---
 
@@ -135,20 +136,28 @@ The system follows a **parse-store-match** pipeline:
 ```
 Upload File → Multer (disk storage)
      ↓
-Gemini 1.5 Flash (inline base64 + structured prompt)
+Mistral OCR (mistral-ocr-latest)
+Converts PDF/image → clean markdown text
+     ↓
+Mistral Small (mistral-small-latest)
+Extracts structured JSON using typed prompt
      ↓
 JSON response → clean (strip markdown fences)
      ↓
-Parse JSON → retry if malformed
+Parse JSON → retry with fix prompt if malformed
      ↓
 Save to MongoDB (PurchaseOrder / GRN / Invoice)
      ↓
 Trigger matching by poNumber
 ```
 
-**Document-type prompts** instruct Gemini to return only a plain JSON object with the exact schema required. If the first attempt returns malformed JSON, a follow-up prompt asks Gemini to fix it.
+**Two-step parsing approach:**
+- **Step 1 (OCR):** `mistral-ocr-latest` reads the raw PDF or image and returns clean markdown preserving all tables, line items, and numbers accurately.
+- **Step 2 (Extract):** `mistral-small-latest` receives the OCR markdown along with a strict typed prompt, returning only the structured JSON. If the first attempt returns malformed JSON, a follow-up prompt asks Mistral to fix it.
 
-**Supported file types**: PDF, JPEG, PNG, WEBP, TXT (up to 20MB)
+This two-step approach is more accurate than single-step because OCR and structured extraction are handled by specialized models.
+
+**Supported file types**: PDF, JPEG, PNG, WEBP (up to 20MB)
 
 ---
 
@@ -218,7 +227,7 @@ This is explained in `src/services/matchingService.js` in the `normalizeItemKey(
 Upload and parse a document.
 
 **Body (multipart/form-data):**
-- `file` — PDF, image, or text file
+- `file` — PDF or image file
 - `documentType` — `po` | `grn` | `invoice`
 
 **Response:**
@@ -228,6 +237,17 @@ Upload and parse a document.
   "document": { "id": "...", "documentId": "...", "poNumber": "..." },
   "parsedData": { ... },
   "matchStatus": { "poNumber": "PO-...", "status": "insufficient_documents" }
+}
+```
+
+### POST /documents/upload-json
+Upload pre-parsed JSON directly (bypasses Mistral, useful for testing).
+
+**Body (application/json):**
+```json
+{
+  "documentType": "po",
+  "parsedData": { "poNumber": "...", "items": [...] }
 }
 ```
 
@@ -263,22 +283,23 @@ List all match results. Query params: `status`, `page`, `limit`.
 | Assumption | Reasoning |
 |-----------|-----------|
 | One PO per `poNumber` | Assignment spec; duplicates flagged as errors |
-| Gemini has good enough OCR | Works well for clean PDF/images; handwritten docs may degrade |
+| Mistral OCR for all doc types | Works well for clean PDFs and images; scanned/handwritten docs may degrade |
+| Two-step OCR + extraction | More accurate than single-step; slight added latency is acceptable |
 | `poNumber` is present in all documents | Required field; fallback to `UNKNOWN-PO` if absent |
-| Quantities are numeric in source docs | Gemini is instructed to cast to number |
+| Quantities are numeric in source docs | Mistral Small is instructed to cast to number |
 | Partial GRN delivery is valid | GRN qty can be less than PO qty and still be `matched` |
 | No authentication | Out of scope for this assignment |
-| No retry queue for Gemini failures | File saved; parse would need re-upload |
+| No retry queue for Mistral failures | File saved; parse would need re-upload |
 
 ---
 
 ## What I Would Improve With More Time
 
-1. **Job queue (BullMQ/Redis)** — Decouple parsing from the HTTP response; handle retries on Gemini timeouts
+1. **Job queue (BullMQ/Redis)** — Decouple parsing from the HTTP response; handle retries on Mistral timeouts
 2. **Authentication** — JWT-based auth with role-based access (finance vs. warehouse roles)
 3. **Webhook / event bus** — Emit events when match status changes so downstream systems (ERP, Slack) are notified
 4. **Unit & integration tests** — Jest tests for matching logic and API endpoints
-5. **Rate limiting** — Protect Gemini API key from excessive usage
+5. **Rate limiting** — Protect Mistral API key from excessive usage
 6. **Embedding-based item matching** — Use vector similarity for description matching instead of string normalization
 7. **Audit trail** — Immutable log of all match state changes per poNumber
 8. **Swagger UI** — Auto-generated API docs served at `/api-docs`
@@ -307,7 +328,7 @@ three-way-match-engine/
 │   │   ├── documentRoutes.js
 │   │   └── matchRoutes.js
 │   └── services/
-│       ├── geminiService.js      # Gemini API parsing
+│       ├── parserService.js      # Mistral OCR + JSON extraction
 │       └── matchingService.js    # Three-way match logic
 ├── sample-data/                  # Example parsed outputs
 ├── postman/                      # Postman collection

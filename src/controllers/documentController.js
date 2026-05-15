@@ -5,7 +5,7 @@ const fs = require('fs');
 const PurchaseOrder = require('../models/PurchaseOrder');
 const GRN = require('../models/GRN');
 const Invoice = require('../models/Invoice');
-const { parseDocumentWithGemini } = require('../services/geminiService');
+const { parseDocumentWithGemini } = require('../services/parserService');
 const { triggerMatching } = require('../services/matchingService');
 
 // ─── POST /documents/upload ───────────────────────────────────────────────────
