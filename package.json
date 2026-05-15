@@ -1,0 +1,23 @@
+{
+  "name": "three-way-match-engine",
+  "version": "1.0.0",
+  "description": "Backend service for Three-Way Match Engine (PO, GRN, Invoice) using Gemini API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@mistralai/mistralai": "^2.2.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.4.0",
+    "multer": "^1.4.5-lts.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}

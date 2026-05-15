@@ -1,0 +1,39 @@
+{
+  "_id": "665c1a2b3f4e5d6789abcdef",
+  "documentId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "documentType": "po",
+  "poNumber": "PO-2024-0042",
+  "poDate": "2024-06-01",
+  "vendorName": "TechSupply Co. Ltd.",
+  "vendorAddress": "12 Industrial Park, Mumbai, MH 400001",
+  "buyerName": "Acme Corp Pvt. Ltd.",
+  "currency": "INR",
+  "totalAmount": 185000,
+  "items": [
+    {
+      "itemCode": "ITEM-001",
+      "sku": "TSC-LAPTOP-15",
+      "description": "Laptop 15 inch i7 16GB RAM",
+      "quantity": 10,
+      "unitPrice": 75000,
+      "unit": "pcs"
+    },
+    {
+      "itemCode": "ITEM-002",
+      "sku": "TSC-MOUSE-WL",
+      "description": "Wireless Mouse",
+      "quantity": 20,
+      "unitPrice": 1500,
+      "unit": "pcs"
+    },
+    {
+      "itemCode": "ITEM-003",
+      "sku": "TSC-KBD-USB",
+      "description": "USB Keyboard",
+      "quantity": 20,
+      "unitPrice": 2000,
+      "unit": "pcs"
+    }
+  ],
+  "uploadedAt": "2024-06-02T09:00:00.000Z"
+}

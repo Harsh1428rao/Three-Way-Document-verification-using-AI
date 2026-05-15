@@ -1,0 +1,70 @@
+{
+  "success": true,
+  "poNumber": "PO-2024-0099",
+  "matchStatus": "mismatch",
+  "reasons": [
+    "grn_qty_exceeds_po_qty [item: ITEM-001] grn=12 po=10",
+    "invoice_qty_exceeds_grn_qty [item: ITEM-002] invoice=25 grn=20",
+    "invoice_date_after_po_date [invoice: INV-2024-007]"
+  ],
+  "summary": {
+    "totalPOItems": 2,
+    "matchedItems": 0,
+    "mismatchedItems": 2,
+    "totalGRNs": 1,
+    "totalInvoices": 1
+  },
+  "itemResults": [
+    {
+      "itemKey": "ITEM-001",
+      "description": "Office Chair",
+      "poQuantity": 10,
+      "grnQuantity": 12,
+      "invoiceQuantity": 10,
+      "status": "mismatch",
+      "issues": ["grn_qty_exceeds_po_qty"]
+    },
+    {
+      "itemKey": "ITEM-002",
+      "description": "Standing Desk",
+      "poQuantity": 20,
+      "grnQuantity": 20,
+      "invoiceQuantity": 25,
+      "status": "mismatch",
+      "issues": ["invoice_qty_exceeds_po_qty", "invoice_qty_exceeds_grn_qty"]
+    }
+  ],
+  "documents": {
+    "purchaseOrders": [
+      {
+        "id": "777c1a2b3f4e5d6789abcdef",
+        "poNumber": "PO-2024-0099",
+        "poDate": "2024-05-01T00:00:00.000Z",
+        "vendorName": "FurniturePlus Ltd.",
+        "totalAmount": 450000,
+        "itemCount": 2,
+        "uploadedAt": "2024-05-02T10:00:00.000Z"
+      }
+    ],
+    "grns": [
+      {
+        "id": "888c1a2b3f4e5d6789abcdf0",
+        "grnNumber": "GRN-2024-0202",
+        "grnDate": "2024-05-15T00:00:00.000Z",
+        "itemCount": 2,
+        "uploadedAt": "2024-05-15T12:00:00.000Z"
+      }
+    ],
+    "invoices": [
+      {
+        "id": "999c1a2b3f4e5d6789abcdf1",
+        "invoiceNumber": "INV-2024-007",
+        "invoiceDate": "2024-06-01T00:00:00.000Z",
+        "totalAmount": 520000,
+        "itemCount": 2,
+        "uploadedAt": "2024-06-01T09:00:00.000Z"
+      }
+    ]
+  },
+  "lastUpdated": "2024-06-01T09:01:10.000Z"
+}

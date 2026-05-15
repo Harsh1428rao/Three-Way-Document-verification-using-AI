@@ -1,0 +1,75 @@
+{
+  "success": true,
+  "poNumber": "PO-2024-0042",
+  "matchStatus": "matched",
+  "reasons": [],
+  "summary": {
+    "totalPOItems": 3,
+    "matchedItems": 3,
+    "mismatchedItems": 0,
+    "totalGRNs": 1,
+    "totalInvoices": 1
+  },
+  "itemResults": [
+    {
+      "itemKey": "ITEM-001",
+      "description": "Laptop 15 inch i7 16GB RAM",
+      "poQuantity": 10,
+      "grnQuantity": 7,
+      "invoiceQuantity": 7,
+      "status": "matched",
+      "issues": []
+    },
+    {
+      "itemKey": "ITEM-002",
+      "description": "Wireless Mouse",
+      "poQuantity": 20,
+      "grnQuantity": 20,
+      "invoiceQuantity": 20,
+      "status": "matched",
+      "issues": []
+    },
+    {
+      "itemKey": "ITEM-003",
+      "description": "USB Keyboard",
+      "poQuantity": 20,
+      "grnQuantity": 18,
+      "invoiceQuantity": 18,
+      "status": "matched",
+      "issues": []
+    }
+  ],
+  "documents": {
+    "purchaseOrders": [
+      {
+        "id": "665c1a2b3f4e5d6789abcdef",
+        "poNumber": "PO-2024-0042",
+        "poDate": "2024-06-01T00:00:00.000Z",
+        "vendorName": "TechSupply Co. Ltd.",
+        "totalAmount": 185000,
+        "itemCount": 3,
+        "uploadedAt": "2024-06-02T09:00:00.000Z"
+      }
+    ],
+    "grns": [
+      {
+        "id": "665c1a2b3f4e5d6789abcdf0",
+        "grnNumber": "GRN-2024-0101",
+        "grnDate": "2024-06-10T00:00:00.000Z",
+        "itemCount": 3,
+        "uploadedAt": "2024-06-10T11:30:00.000Z"
+      }
+    ],
+    "invoices": [
+      {
+        "id": "665c1a2b3f4e5d6789abcdf1",
+        "invoiceNumber": "INV-TS-20240612",
+        "invoiceDate": "2024-06-12T00:00:00.000Z",
+        "totalAmount": 132000,
+        "itemCount": 3,
+        "uploadedAt": "2024-06-12T14:00:00.000Z"
+      }
+    ]
+  },
+  "lastUpdated": "2024-06-12T14:01:23.000Z"
+}

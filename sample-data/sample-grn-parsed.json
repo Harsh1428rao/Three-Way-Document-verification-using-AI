@@ -1,0 +1,37 @@
+{
+  "_id": "665c1a2b3f4e5d6789abcdf0",
+  "documentId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "documentType": "grn",
+  "grnNumber": "GRN-2024-0101",
+  "poNumber": "PO-2024-0042",
+  "grnDate": "2024-06-10",
+  "receivedBy": "Rahul Sharma",
+  "warehouse": "Warehouse A, Pune",
+  "items": [
+    {
+      "itemCode": "ITEM-001",
+      "sku": "TSC-LAPTOP-15",
+      "description": "Laptop 15 inch i7 16GB RAM",
+      "receivedQuantity": 7,
+      "unit": "pcs",
+      "condition": "good"
+    },
+    {
+      "itemCode": "ITEM-002",
+      "sku": "TSC-MOUSE-WL",
+      "description": "Wireless Mouse",
+      "receivedQuantity": 20,
+      "unit": "pcs",
+      "condition": "good"
+    },
+    {
+      "itemCode": "ITEM-003",
+      "sku": "TSC-KBD-USB",
+      "description": "USB Keyboard",
+      "receivedQuantity": 18,
+      "unit": "pcs",
+      "condition": "good"
+    }
+  ],
+  "uploadedAt": "2024-06-10T11:30:00.000Z"
+}

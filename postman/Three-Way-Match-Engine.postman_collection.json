@@ -1,0 +1,243 @@
+{
+  "info": {
+    "name": "Three-Way Match Engine API",
+    "description": "API collection for the Three-Way Match Engine (PO, GRN, Invoice) backend service.",
+    "_postman_id": "three-way-match-engine-v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "documentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "poNumber",
+      "value": "PO-2024-0042",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the server is running."
+      }
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload PO Document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.document && json.document.id) {",
+                  "  pm.collectionVariables.set('documentId', json.document.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/your/purchase-order.pdf",
+                  "description": "The PO PDF/image file"
+                },
+                {
+                  "key": "documentType",
+                  "value": "po",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/documents/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "upload"]
+            },
+            "description": "Upload a Purchase Order document. Gemini will parse it and matching will be triggered."
+          }
+        },
+        {
+          "name": "Upload GRN Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/your/grn.pdf",
+                  "description": "The GRN PDF/image file"
+                },
+                {
+                  "key": "documentType",
+                  "value": "grn",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/documents/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "upload"]
+            },
+            "description": "Upload a Goods Receipt Note. Can be uploaded before or after PO/Invoice."
+          }
+        },
+        {
+          "name": "Upload Invoice Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "/path/to/your/invoice.pdf",
+                  "description": "The Invoice PDF/image file"
+                },
+                {
+                  "key": "documentType",
+                  "value": "invoice",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/documents/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "upload"]
+            },
+            "description": "Upload an Invoice. Can be uploaded before or after PO/GRN."
+          }
+        },
+        {
+          "name": "Get Document by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents/{{documentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "{{documentId}}"]
+            },
+            "description": "Retrieve a parsed document by its MongoDB _id."
+          }
+        },
+        {
+          "name": "List All Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "List all documents across PO, GRN, and Invoice collections."
+          }
+        },
+        {
+          "name": "List Documents by PO Number",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents?poNumber={{poNumber}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents"],
+              "query": [
+                { "key": "poNumber", "value": "{{poNumber}}" }
+              ]
+            },
+            "description": "List all documents related to a specific PO number."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Match Results",
+      "item": [
+        {
+          "name": "Get Match Result by PO Number",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/match/{{poNumber}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["match", "{{poNumber}}"]
+            },
+            "description": "Get the three-way match result for a given PO number. Returns match status, reasons, and per-item breakdown."
+          }
+        },
+        {
+          "name": "List All Match Results",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/match?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["match"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "List all match results across all PO numbers."
+          }
+        },
+        {
+          "name": "List Mismatched Results",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/match?status=mismatch",
+              "host": ["{{baseUrl}}"],
+              "path": ["match"],
+              "query": [
+                { "key": "status", "value": "mismatch" }
+              ]
+            },
+            "description": "Filter match results by status: matched, partially_matched, mismatch, insufficient_documents"
+          }
+        }
+      ]
+    }
+  ]
+}
